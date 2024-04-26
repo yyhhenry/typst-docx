@@ -1,12 +1,13 @@
-use std::path::PathBuf;
+use std::{io::Write, path::PathBuf};
 
 use anyhow::Result;
 use clap::Parser;
 use std::fs::File;
 
+/// Convert typst file to docx
 #[derive(Parser)]
 struct Args {
-    /// The input typst file (*.typ), if not provided, stdin is used.
+    /// The input typst file (*.typ), if not provided, clipboard text will be used
     input_file: Option<String>,
 }
 
@@ -23,10 +24,10 @@ fn create_temp_file(key: &str, ext: &str) -> Result<(PathBuf, File)> {
     Ok((path, file))
 }
 
-fn stdin_to_temp_file(key: &str, ext: &str) -> Result<std::path::PathBuf> {
-    println!("Reading from stdin, press Ctrl+Z to finish on Windows");
+fn clipboard_to_temp_file(key: &str, ext: &str) -> Result<std::path::PathBuf> {
+    let clipboard = arboard::Clipboard::new()?.get_text()?;
     let (path, mut file) = create_temp_file(key, ext)?;
-    std::io::copy(&mut std::io::stdin(), &mut file)?;
+    file.write_all(clipboard.as_bytes())?;
     Ok(path)
 }
 
@@ -34,7 +35,7 @@ fn main() -> Result<()> {
     let args = Args::parse();
     let path = match args.input_file {
         Some(file) => PathBuf::from(file),
-        None => stdin_to_temp_file("typst-docx", "typ")?,
+        None => clipboard_to_temp_file("typst-docx", "typ")?,
     };
     if !path.is_file() || path.extension() != Some("typ".as_ref()) {
         anyhow::bail!("Invalid input file");

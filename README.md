@@ -4,6 +4,11 @@
 
 ## 使用方法
 
+```bash
+# 安装，具体的tag版本号请查看github，此处只是示例
+cargo install --git https://github.com/yyhhenry/typst-docx --tag v0.1.0
+```
+
 保证电脑中已经安装了pandoc（添加到PATH），Rust环境，以及WPS Office。
 
 在WPS Office的Normal.dotm中添加宏，然后根据需求添加到快捷访问工具栏（笔者使用Alt+7）。

@@ -33,10 +33,11 @@ fn clipboard_to_docx() -> Result<String> {
         .arg(&docx_file)
         .output()?;
     if !output.status.success() {
-        anyhow::bail!(
-            "Failed to convert typst to docx, Consider installing pandoc or check your typst code.\n{}",
-            String::from_utf8_lossy(&output.stderr)
+        let err = String::from_utf8_lossy(&output.stderr).replace(
+            &format!("\"{}\"", input_file.to_string_lossy()),
+            "Typst code",
         );
+        anyhow::bail!("{}", err);
     }
     let docx_file = docx_file.to_string_lossy().to_string();
     println!("Docx file created: {}", docx_file);
@@ -48,8 +49,9 @@ async fn typst_docx() -> impl Responder {
     match clipboard_to_docx() {
         Ok(docx_file) => docx_file,
         Err(e) => {
-            println!("Error: {}", e.to_string());
-            "".to_string()
+            let err = format!("Error: {}", e.to_string());
+            println!("{}", err);
+            err
         }
     }
 }

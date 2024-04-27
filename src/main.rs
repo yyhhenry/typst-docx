@@ -6,19 +6,15 @@ use std::{io::Write, path::PathBuf};
 fn generate_temp_path(key: &str, ext: &str) -> Result<PathBuf> {
     let temp_dir = std::env::temp_dir();
     let mut temp_file = temp_dir.clone();
-    temp_file.push(format!("{}.{}", key, ext));
-    Ok(temp_file)
-}
-
-fn generate_uuid_temp_path(key: &str, ext: &str) -> Result<PathBuf> {
     let uuid = uuid::Uuid::new_v4();
-    generate_temp_path(&format!("{}-{}", key, uuid), ext)
+    temp_file.push(format!("{}-{}.{}", key, uuid, ext));
+    Ok(temp_file)
 }
 
 fn clipboard_to_temp_file(key: &str, ext: &str) -> Result<std::path::PathBuf> {
     let clipboard = arboard::Clipboard::new()?.get_text()?;
     println!("Clipboard text: {}", clipboard);
-    let path = generate_uuid_temp_path(key, ext)?;
+    let path = generate_temp_path(key, ext)?;
     let mut file = File::create(&path)?;
     file.write_all(clipboard.as_bytes())?;
     Ok(path)

@@ -4,5 +4,9 @@ async function insertTypstDocx() {
     if (path !== '') {
         Selection.Delete();
         Selection.InsertFile(path, undefined, undefined, undefined, undefined);
+    } else {
+        alert(
+            'Failed to convert typst to docx, Consider checking the typst server'
+        );
     }
 }

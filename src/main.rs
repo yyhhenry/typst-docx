@@ -34,7 +34,7 @@ fn clipboard_to_docx() -> Result<String> {
         .output()?;
     if !output.status.success() {
         anyhow::bail!(
-            "Failed to convert typst to docx, Consider installing pandoc: {}",
+            "Failed to convert typst to docx, Consider installing pandoc or check your typst code.\n{}",
             String::from_utf8_lossy(&output.stderr)
         );
     }
@@ -45,15 +45,24 @@ fn clipboard_to_docx() -> Result<String> {
 
 #[actix_web::get("/")]
 async fn typst_docx() -> impl Responder {
-    clipboard_to_docx().unwrap_or("".to_string())
+    match clipboard_to_docx() {
+        Ok(docx_file) => docx_file,
+        Err(e) => {
+            println!("Error: {}", e.to_string());
+            "".to_string()
+        }
+    }
 }
+
+static MACRO_JS: &str = include_str!("../js/macro.js");
 
 #[actix_web::main]
 async fn main() -> Result<()> {
     let addr = "127.0.0.1:5180";
     println!("Server started at: http://{}", addr);
-    println!("Use the macro at js/macro.js in your WPS Office to convert typst to docx");
     println!("You should download pandoc and add it to your PATH to use this service.");
+    println!("Use this macro in your WPS Office (Normal.dotm) to convert typst to docx:");
+    println!("\n{}", MACRO_JS);
     HttpServer::new(|| App::new().service(typst_docx))
         .bind(addr)?
         .run()

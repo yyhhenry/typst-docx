@@ -1,4 +1,4 @@
-Sub PasteTypedDocx()
+Sub PasteTypstDocx()
     Dim http As Object
     Dim url As String
     Dim result As String

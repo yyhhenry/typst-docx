@@ -21,3 +21,5 @@ cargo install --git https://github.com/yyhhenry/typst-docx
 ## Word
 
 可以尝试scripts/macro.vba中的宏PasteTypstDocx，将其添加到Normal.dotm中，然后在Word中加入快捷访问工具栏。
+
+这个宏与上述的WPS Office中的JS宏有略微的不同，不是作为一个转换功能，而是根据剪贴板中的Typst源码，粘贴为docx格式。

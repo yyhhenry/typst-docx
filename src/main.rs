@@ -52,7 +52,7 @@ async fn typst_docx() -> impl Responder {
     }
 }
 
-static MACRO_JS: &str = include_str!("../js/macro.js");
+static MACRO_JS: &str = include_str!("../scripts/macro.js");
 
 #[actix_web::main]
 async fn main() -> Result<()> {

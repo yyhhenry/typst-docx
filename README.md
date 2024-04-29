@@ -17,3 +17,7 @@ cargo install --git https://github.com/yyhhenry/typst-docx
 主要用于输入公式，或借助Typst脚本进行一定的计算。
 
 请尽量以段落为单位使用，默认情况下，此脚本会嵌入一个段落（末尾有换行符），如果你分别选中每个词，每次都需要手动删除多余的换行符。
+
+## Word
+
+可以尝试scripts/macro.vba中的宏PasteTypstDocx，将其添加到Normal.dotm中，然后在Word中加入快捷访问工具栏。

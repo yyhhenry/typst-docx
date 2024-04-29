@@ -53,14 +53,21 @@ async fn typst_docx() -> impl Responder {
 }
 
 static MACRO_JS: &str = include_str!("../scripts/macro.js");
+static MACRO_VBA: &str = include_str!("../scripts/macro.vba");
 
 #[actix_web::main]
 async fn main() -> Result<()> {
     let addr = "127.0.0.1:5180";
     println!("Server started at: http://{}", addr);
     println!("You should download pandoc and add it to your PATH to use this service.");
-    println!("Use this macro in your WPS Office (Normal.dotm) to convert typst to docx:");
+    println!(
+        "-----\nUse this macro in your WPS Office (Normal.dotm) to convert typst to docx.\n-----"
+    );
     println!("\n{}", MACRO_JS);
+    println!(
+        "-----\nOr Use this macro in your Word (Normal.dotm) to paste typst code as docx.\n-----"
+    );
+    println!("\n{}", MACRO_VBA);
     HttpServer::new(|| App::new().service(typst_docx))
         .bind(addr)?
         .run()

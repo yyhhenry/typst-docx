@@ -15,8 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Build Library
-        run: cargo build
       - name: Run tests
         run: cargo test
       - name: Build Binary

@@ -4,11 +4,13 @@
 
 This is a macro for pasting Typst content directly into WPS/Word.
 
-## 使用方法
+## 使用方法 Usage
 
 保证电脑中已经安装了pandoc（添加到PATH），Rust环境，以及WPS/Word。
 
 Make sure you have pandoc (added to PATH), Rust environment, and WPS/Word installed on your computer.
+
+如果你使用Releases中的可执行文件，则无需安装Rust环境。
 
 ```bash
 # install pandoc and rust

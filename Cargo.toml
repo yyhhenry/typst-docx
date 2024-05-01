@@ -9,4 +9,5 @@ edition = "2021"
 actix-web = "4.5.1"
 anyhow = "1.0.82"
 arboard = "3.3.2"
+fs2 = "0.4.3"
 uuid = { version = "1.8.0", features = ["v4"] }

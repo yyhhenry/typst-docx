@@ -1,5 +1,6 @@
 use actix_web::{App, HttpServer, Responder};
 use anyhow::Result;
+use fs2::FileExt;
 use std::fs::File;
 use std::{io::Write, path::PathBuf};
 
@@ -52,25 +53,32 @@ async fn typst_docx() -> impl Responder {
     }
 }
 
-static MACRO_JS: &str = include_str!("../scripts/macro.js");
+/// Err if another instance is running
+fn unique_lock() -> Result<File> {
+    let lock_file = std::env::temp_dir().join("typst-docx.lock");
+    let file = File::options().write(true).create(true).open(&lock_file)?;
+    match file.try_lock_exclusive() {
+        Ok(_) => Ok(file),
+        Err(_) => anyhow::bail!("Another instance is running."),
+    }
+}
+
 static MACRO_VBA: &str = include_str!("../scripts/macro.vba");
 
 #[actix_web::main]
 async fn main() -> Result<()> {
+    println!("Typst Docx");
+    let _lock = unique_lock()?;
     let addr = "127.0.0.1:5180";
+    let server = HttpServer::new(|| App::new().service(typst_docx))
+        .bind(addr)?
+        .run();
+
     println!("Server started at: http://{}", addr);
     println!("You should download pandoc and add it to your PATH to use this service.");
-    println!(
-        "-----\nUse this macro in your WPS Office (Normal.dotm) to convert typst to docx.\n-----"
-    );
-    println!("\n{}", MACRO_JS);
-    println!(
-        "-----\nOr Use this macro in your Word (Normal.dotm) to paste typst code as docx.\n-----"
-    );
-    println!("\n{}", MACRO_VBA);
-    HttpServer::new(|| App::new().service(typst_docx))
-        .bind(addr)?
-        .run()
-        .await?;
+    println!("Use this macro in your Word (Normal.dotm) to paste typst code as docx.");
+    println!("-----\n\n{}", MACRO_VBA);
+
+    server.await?;
     Ok(())
 }

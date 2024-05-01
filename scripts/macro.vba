@@ -2,11 +2,13 @@ Sub PasteTypstDocx()
     Dim http As Object
     Dim url As String
     Dim result As String
+
+    Shell "typst-docx.exe", vbMinimizedNoFocus
     
     Set http = CreateObject("MSXML2.XMLHTTP")
-    
+
     url = "http://127.0.0.1:5180"
-    url = url & "?t=" & Timer
+    url = url & "?t=" & Timer 
     
     On Error Resume Next
     http.Open "GET", url, False

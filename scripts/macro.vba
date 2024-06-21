@@ -1,4 +1,3 @@
-```vba
 Sub PasteTypstDocx()
     Dim http As Object
     Dim url As String
@@ -6,6 +5,10 @@ Sub PasteTypstDocx()
     Dim timestamp As String
 
     Shell "typst-docx.exe", vbMinimizedNoFocus
+    
+    If Selection.Type <> wdSelectionIP Then
+        Selection.Cut
+    End If
     
     Set http = CreateObject("MSXML2.XMLHTTP")
     timestamp = Format(Now, "yyyymmddHHmmss")
@@ -27,9 +30,54 @@ Sub PasteTypstDocx()
     If LCase(Left(result, 5)) = "error" Then
         MsgBox result
     ElseIf result <> "" Then
+        originalStyle = Selection.style
+        currentPosition = Selection.Start
+        currentLine = Selection.Information(wdFirstCharacterLineNumber)
+        
         Selection.InsertFile FileName:=result
+        Call DeleteBackToLineEnd
+
+        typstEnd = Selection.Start
+        typstEndLine = Selection.Information(wdFirstCharacterLineNumber)
+        If currentLine <> typstEndLine Then
+            Selection.Start = currentPosition
+            Selection.End = typstEnd
+        End If
+        Selection.style = originalStyle
     End If
     
     Set http = Nothing
 End Sub
-```
+
+Sub DeleteBackToLineEnd()
+    Dim currentLine As Integer
+    Dim prevLineEnd As Integer
+    Dim currentPosition As Long
+    Dim lineStart As Long
+    Dim textBeforeCursor As String
+    
+    currentPosition = Selection.Start
+    
+    lineStart = Selection.Paragraphs(1).Range.Start
+    
+    textBeforeCursor = Mid(Selection.Paragraphs(1).Range.Text, 1, currentPosition - lineStart)
+    
+    If Trim(textBeforeCursor) <> "" Then
+        Exit Sub
+    End If
+    
+    currentLine = Selection.Information(wdFirstCharacterLineNumber)
+    
+    If currentLine = 1 Then
+        Exit Sub
+    End If
+    
+    Selection.MoveUp Unit:=wdLine, Count:=1
+    Selection.EndKey Unit:=wdLine
+    
+    prevLineEnd = Selection.Start
+
+    Selection.Start = currentPosition
+    Selection.End = prevLineEnd
+    Selection.Delete
+End Sub

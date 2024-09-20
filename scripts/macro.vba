@@ -7,7 +7,7 @@ Sub PasteTypstDocx()
     Shell "typst-docx.exe", vbMinimizedNoFocus
     
     If Selection.Type <> wdSelectionIP Then
-        Selection.Cut
+        Call CutWithoutFinalLinekBreak
     End If
     
     Set http = CreateObject("MSXML2.XMLHTTP")
@@ -30,7 +30,7 @@ Sub PasteTypstDocx()
     If LCase(Left(result, 5)) = "error" Then
         MsgBox result
     ElseIf result <> "" Then
-        originalStyle = Selection.style
+        originalStyle = Selection.Style
         currentPosition = Selection.Start
         currentLine = Selection.Information(wdFirstCharacterLineNumber)
         
@@ -43,7 +43,7 @@ Sub PasteTypstDocx()
             Selection.Start = currentPosition
             Selection.End = typstEnd
         End If
-        Selection.style = originalStyle
+        Selection.Style = originalStyle
     End If
     
     Set http = Nothing
@@ -80,4 +80,15 @@ Sub DeleteBackToLineEnd()
     Selection.Start = currentPosition
     Selection.End = prevLineEnd
     Selection.Delete
+End Sub
+
+Sub CutWithoutFinalLinekBreak()
+    Dim sel As Range
+    Set sel = Selection.Range
+    
+    If sel.End = sel.Paragraphs.Last.Range.End Then
+        sel.End = sel.End - 1
+    End If
+    
+    sel.Cut
 End Sub

@@ -31,18 +31,12 @@ Sub PasteTypstDocx()
         MsgBox result
     ElseIf result <> "" Then
         originalStyle = Selection.Style
-        currentPosition = Selection.Start
-        currentLine = Selection.Information(wdFirstCharacterLineNumber)
+        typstStart = Selection.Start
         
         Selection.InsertFile FileName:=result
         Call DeleteBackToLineEnd
 
-        typstEnd = Selection.Start
-        typstEndLine = Selection.Information(wdFirstCharacterLineNumber)
-        If currentLine <> typstEndLine Then
-            Selection.Start = currentPosition
-            Selection.End = typstEnd
-        End If
+        Selection.End = typstStart
         Selection.Style = originalStyle
     End If
     
